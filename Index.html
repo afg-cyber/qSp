@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#06060F">
+  <title>Your Studio | Video Production Agency</title>
+  <meta name="description" content="Video production agency. Brand films, ads and social content, planned, shot and edited by one team.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- AOS (Animate On Scroll) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Unbounded', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            sans: ['Figtree', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif']
+          },
+          colors: {
+            neon: { pink: '#FF2E93', cyan: '#22E1FF', violet: '#7C5CFF', green: '#2BFF88' }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    ::selection { background: #7C5CFF; color: #fff; }
+    :focus-visible { outline: 2px solid #22E1FF; outline-offset: 3px; }
+
+    /* ---------- Ambient background (fixed, sits behind everything) ---------- */
+    .bg-layer { position: fixed; inset: 0; z-index: -10; overflow: hidden; pointer-events: none; background: #06060F; }
+    .blob { position: absolute; border-radius: 50%; will-change: transform; }
+    .blob-a { width: 70vmax; height: 70vmax; left: -25vmax; top: -25vmax;
+      background: radial-gradient(circle, rgba(255,46,147,.30), transparent 65%); animation: driftA 32s ease-in-out infinite alternate; }
+    .blob-b { width: 65vmax; height: 65vmax; right: -25vmax; top: 20vh;
+      background: radial-gradient(circle, rgba(34,225,255,.22), transparent 65%); animation: driftB 38s ease-in-out infinite alternate; }
+    .blob-c { width: 70vmax; height: 70vmax; left: 10vmax; bottom: -35vmax;
+      background: radial-gradient(circle, rgba(124,92,255,.30), transparent 65%); animation: driftA 44s ease-in-out infinite alternate-reverse; }
+    @keyframes driftA { to { transform: translate3d(8vmax, 6vmax, 0); } }
+    @keyframes driftB { to { transform: translate3d(-9vmax, -5vmax, 0); } }
+    .noise { position: absolute; inset: 0; opacity: .07;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>"); }
+
+    /* ---------- Glass ---------- */
+    .glass {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(140%);
+    }
+
+    /* ---------- Hero headline: signal locks in, then keeps a faint RGB split ---------- */
+    #headline {
+      text-shadow: -1.5px 0 rgba(255,46,147,.8), 1.5px 0 rgba(34,225,255,.8), 0 0 42px rgba(124,92,255,.35);
+      animation: lockIn 1.9s cubic-bezier(.2,.8,.2,1) .15s both;
+    }
+    @keyframes lockIn { from { text-shadow: -12px 0 #FF2E93, 12px 0 #22E1FF, 0 0 0 rgba(124,92,255,0); } }
+    .word { display: inline-block; animation: wordIn .9s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 90ms + 150ms); }
+    @keyframes wordIn { from { opacity: 0; transform: translateY(.5em); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+
+    /* ---------- Glowing pulse on action buttons ---------- */
+    .btn-pulse {
+      box-shadow: 0 0 0 0 rgba(43,255,136,.55), 0 0 28px rgba(43,255,136,.40);
+      animation: pulse 2.2s ease-out infinite;
+      transition: transform .3s cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-pulse:hover { transform: translateY(-2px) scale(1.04); }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(43,255,136,.55), 0 0 28px rgba(43,255,136,.40); }
+      70%  { box-shadow: 0 0 0 22px rgba(43,255,136,0), 0 0 40px rgba(43,255,136,.60); }
+      100% { box-shadow: 0 0 0 0 rgba(43,255,136,0), 0 0 28px rgba(43,255,136,.40); }
+    }
+    .btn-glass { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s, border-color .3s; }
+    .btn-glass:hover { transform: translateY(-2px); border-color: rgba(34,225,255,.6); box-shadow: 0 0 28px -4px rgba(34,225,255,.6); }
+
+    /* ---------- Video cards ---------- */
+    .card-wrap { position: relative; }
+    .card-wrap:hover { z-index: 20; }
+    .vcard {
+      --accent: 34 225 255;
+      transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s, border-color .5s;
+    }
+    .vcard:hover {
+      transform: scale(1.04);
+      border-color: rgb(var(--accent) / .6);
+      box-shadow: 0 24px 60px -24px rgb(var(--accent) / .6), 0 0 34px -8px rgb(var(--accent) / .5);
+    }
+    .vcard[data-playing]:hover { transform: none; }
+    .thumb { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+    .vcard:hover .thumb { transform: scale(1.1); }
+    .art-grid {
+      background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Play overlay */
+    .play-btn {
+      position: relative; display: grid; place-items: center;
+      width: 64px; height: 64px; border-radius: 9999px; color: #fff;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.35);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      transition: transform .4s cubic-bezier(.2,.8,.2,1), background .4s, color .4s, box-shadow .4s;
+    }
+    .play-btn.lg { width: 84px; height: 84px; }
+    .play-btn::after {
+      content: ""; position: absolute; inset: -2px; border-radius: inherit;
+      border: 2px solid rgb(var(--accent) / .8); opacity: 0;
+    }
+    .vcard:hover .play-btn {
+      transform: scale(1.15); color: #06060F;
+      background: rgb(var(--accent));
+      box-shadow: 0 0 40px rgb(var(--accent) / .85);
+    }
+    .vcard:hover .play-btn::after { animation: ring 1.4s ease-out infinite; }
+    @keyframes ring { from { transform: scale(1); opacity: .9; } to { transform: scale(1.8); opacity: 0; } }
+    .play-hit:focus-visible { outline-offset: -6px; }
+
+    /* Viewfinder HUD on the hero reel */
+    .hud { transition: opacity .3s; }
+    .vcard[data-playing] .hud { opacity: 0; }
+    .corner { position: absolute; width: 22px; height: 22px; border: 2px solid rgba(255,255,255,.75); }
+    .corner.tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
+    .corner.tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
+    .corner.bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
+    .corner.br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
+    .rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #FF3B5C; box-shadow: 0 0 10px #FF3B5C; animation: blink 1.2s steps(2, start) infinite; }
+    @keyframes blink { 50% { opacity: .15; } }
+    .reel-glow { position: absolute; inset: -8%; z-index: -1; border-radius: 40px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,46,147,.45), transparent 60%), radial-gradient(circle at 75% 75%, rgba(34,225,255,.40), transparent 60%);
+      filter: blur(50px); opacity: .7; }
+
+    /* ---------- Service cards ---------- */
+    .fcard {
+      --accent: 34 225 255;
+      position: relative; overflow: hidden;
+      transition: transform .5s cubic-bezier(.2,.8,.2,1), border-color .5s, box-shadow .5s;
+    }
+    .fcard:hover { transform: translateY(-6px); border-color: rgb(var(--accent) / .55); box-shadow: 0 24px 60px -28px rgb(var(--accent) / .7); }
+    .spot::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+      background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgb(var(--accent) / .20), transparent 60%);
+    }
+    .spot:hover::before { opacity: 1; }
+    .chip {
+      display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 14px;
+      color: rgb(var(--accent)); background: rgb(var(--accent) / .12);
+      border: 1px solid rgb(var(--accent) / .35); box-shadow: 0 0 24px -6px rgb(var(--accent) / .6);
+    }
+    .chip svg { filter: drop-shadow(0 0 6px rgb(var(--accent) / .8)); }
+
+    /* ---------- Contact ---------- */
+    .row { --accent: 34 225 255; transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s; }
+    a.row:hover { transform: translateX(4px); border-color: rgb(var(--accent) / .55); box-shadow: 0 0 30px -10px rgb(var(--accent) / .7); }
+    .pill { transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s; }
+    .pill:hover { transform: translateY(-3px); border-color: rgba(255,46,147,.6); box-shadow: 0 0 26px -6px rgba(255,46,147,.7); }
+    .map-dark { filter: invert(92%) hue-rotate(180deg) contrast(.9) saturate(.8); }
+
+    /* Filter re-render (AOS handles the first load) */
+    .filter-in { animation: fadeUp .5s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .blob, .btn-pulse, .rec-dot, .word, #headline, .filter-in { animation: none !important; }
+      .vcard:hover .play-btn::after { animation: none; }
+    }
+  </style>
+</head>
+
+<body class="overflow-x-clip bg-[#06060F] font-sans text-white antialiased">
+
+  <!-- Ambient background -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+    <div class="noise"></div>
+  </div>
+
+  <!-- ============ NAV ============ -->
+  <header class="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+    <nav class="glass mx-auto flex max-w-6xl items-center justify-between rounded-full py-2.5 pl-5 pr-2.5" aria-label="Main">
+      <a href="#top" class="flex items-center gap-2.5 font-display text-sm font-semibold sm:text-base">
+        <span class="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-neon-pink to-neon-cyan shadow-[0_0_14px_#22E1FF]"></span>
+        <span data-t="brand"></span>
+      </a>
+      <div class="flex items-center gap-7">
+        <div class="hidden items-center gap-7 text-sm font-medium text-white/75 md:flex">
+          <a href="#work" class="transition-colors hover:text-white">Work</a>
+          <a href="#services" class="transition-colors hover:text-white">Services</a>
+          <a href="#contact" class="transition-colors hover:text-white">Contact</a>
+        </div>
+        <a data-whatsapp target="_blank" rel="noopener noreferrer"
+           class="btn-glass inline-flex items-center gap-2 rounded-full border border-neon-green/50 bg-neon-green/15 px-4 py-2 text-sm font-semibold text-neon-green">
+          <span data-icon="chat" data-cls="h-4 w-4"></span>
+          <span data-t="hero.navLabel"></span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="relative px-5 pb-20 pt-36 sm:px-8 lg:pb-28 lg:pt-44">
+      <div class="mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-[1.05fr_.95fr]">
+        <div>
+          <h1 id="headline" class="font-display font-bold leading-[1.05] tracking-tight" style="font-size:clamp(2.1rem,5.2vw,4.25rem)"></h1>
+          <p data-aos="fade-up" data-aos-delay="700" data-t="hero.subheadline" class="mt-6 max-w-lg text-lg text-white/70"></p>
+
+          <div data-aos="fade-up" data-aos-delay="850" class="mt-9 flex flex-wrap items-center gap-4">
+            <a data-whatsapp target="_blank" rel="noopener noreferrer"
+               class="btn-pulse inline-flex items-center gap-2.5 rounded-full bg-neon-green px-7 py-4 text-base font-semibold text-[#03210F]">
+              <span data-icon="chat" data-cls="h-5 w-5"></span>
+              <span data-t="hero.ctaLabel"></span>
+            </a>
+            <a href="#work" data-t="hero.secondaryLabel"
+               class="btn-glass glass rounded-full px-7 py-4 text-base font-semibold"></a>
+          </div>
+        </div>
+
+        <!-- Showreel in a viewfinder frame -->
+        <div data-aos="zoom-in" data-aos-delay="350" data-aos-duration="1000" class="card-wrap relative">
+          <div class="reel-glow" aria-hidden="true"></div>
+          <div class="vcard glass relative rounded-3xl p-2.5" style="--accent: 34 225 255">
+            <div id="reelFrame" data-frame class="relative aspect-video overflow-hidden rounded-2xl bg-[#0C0C1C]"></div>
+            <div class="hud pointer-events-none absolute inset-2.5 z-10" aria-hidden="true">
+              <span class="corner tl"></span><span class="corner tr"></span>
+              <span class="corner bl"></span><span class="corner br"></span>
+              <div class="absolute left-7 top-6 flex items-center gap-2 text-xs font-semibold">
+                <span class="rec-dot"></span>
+                <span>REC</span>
+                <span id="timecode" class="font-mono font-normal text-white/80">00:00:00:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIDEO PORTFOLIO ============ -->
+    <section id="work" class="scroll-mt-20 px-5 py-20 sm:px-8 sm:py-28">
+      <div class="mx-auto max-w-6xl">
+        <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div data-aos="fade-up">
+            <h2 data-t="copy.workHeading" class="font-display font-semibold leading-tight tracking-tight" style="font-size:clamp(1.6rem,4vw,3rem)"></h2>
+            <p data-t="copy.workIntro" class="mt-4 max-w-md text-white/65"></p>
+          </div>
+          <div id="filters" data-aos="fade-up" data-aos-delay="100" class="flex flex-wrap gap-2" role="group" aria-label="Filter videos by category"></div>
+        </div>
+
+        <div id="videoGrid" class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
+    <!-- ============ SERVICES / BENEFITS ============ -->
+    <section id="services" class="scroll-mt-20 px-5 py-20 sm:px-8 sm:py-28">
+      <div class="mx-auto max-w-6xl">
+        <div data-aos="fade-up" class="max-w-2xl">
+          <h2 data-t="copy.servicesHeading" class="font-display font-semibold leading-tight tracking-tight" style="font-size:clamp(1.6rem,4vw,3rem)"></h2>
+          <p data-t="copy.servicesIntro" class="mt-4 max-w-md text-white/65"></p>
+        </div>
+        <div id="serviceGrid" class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT & LOCATION ============ -->
+    <section id="contact" class="scroll-mt-20 px-5 pb-10 pt-20 sm:px-8 sm:pt-28">
+      <div data-aos="fade-up" class="glass mx-auto grid max-w-6xl gap-12 rounded-[2rem] p-6 sm:p-10 lg:grid-cols-2 lg:p-14">
+        <div>
+          <h2 data-t="copy.contactHeading" class="font-display font-semibold leading-tight tracking-tight" style="font-size:clamp(1.6rem,4vw,3rem)"></h2>
+          <p data-t="copy.contactIntro" class="mt-4 max-w-md text-white/65"></p>
+
+          <a data-whatsapp target="_blank" rel="noopener noreferrer"
+             class="btn-pulse mt-8 inline-flex items-center gap-2.5 rounded-full bg-neon-green px-7 py-4 text-base font-semibold text-[#03210F]">
+            <span data-icon="chat" data-cls="h-5 w-5"></span>
+            <span data-t="hero.ctaLabel"></span>
+          </a>
+
+          <div id="contactRows" class="mt-10 space-y-3"></div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div class="glass aspect-[4/3] w-full overflow-hidden rounded-2xl">
+            <iframe id="map" class="map-dark h-full w-full border-0" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade" title="Map showing the studio location"></iframe>
+          </div>
+          <div>
+            <h3 class="font-display text-base font-semibold">Follow our work</h3>
+            <div id="socials" class="mt-4 flex flex-wrap gap-3"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="mx-auto mt-10 max-w-6xl text-sm text-white/45">
+        &copy; <span id="year"></span> <span data-t="brand"></span>. All rights reserved.
+      </p>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    /* =====================================================================
+       EDIT HERE. All the content on the page comes from this object.
+       ===================================================================== */
+    const SITE = {
+      brand: "Your Studio",
+
+      hero: {
+        headline: "We make videos that stop the scroll.",
+        subheadline: "Brand films, ads and social content, planned, shot and edited by one team.",
+        ctaLabel: "Order on WhatsApp",
+        navLabel: "Order now",
+        secondaryLabel: "See our work"
+      },
+
+      // WhatsApp: number in international format, digits only (no +, spaces or dashes).
+      whatsapp: {
+        number: "10000000000",
+        message: "Hi! I'd like to order a video. Can you share your packages and pricing?"
+      },
+
+      // Big video in the hero. Paste a YouTube link or the 11-character video ID.
+      // Leave "" to show a "Video coming soon" placeholder.
+      reel: { title: "Showreel", url: "" },
+
+      // Portfolio videos. "url" = YouTube link or video ID. Leave "" for a placeholder.
+      videos: [
+        { title: "Brand film: Project One",  category: "Brand film", url: "" },
+        { title: "Product launch ad",        category: "Ads",        url: "" },
+        { title: "Annual conference recap",  category: "Events",     url: "" },
+        { title: "Customer story: Client A", category: "Brand film", url: "" },
+        { title: "Social reel series",       category: "Social",     url: "" },
+        { title: "Wedding highlights",       category: "Events",     url: "" }
+      ],
+
+      // Section text
+      copy: {
+        workHeading: "Our recent work",
+        workIntro: "Press play on any project to watch it right here.",
+        servicesHeading: "What we do for you",
+        servicesIntro: "One team for the whole job, from the first idea to the final export.",
+        contactHeading: "Let's talk about your video",
+        contactIntro: "Tell us what you need, when you need it, and roughly what you can spend. We'll come back with a plan and a price."
+      },
+
+      // Service cards. Icons available: film, scissors, zap, phone-mobile, video, clock
+      services: [
+        { icon: "film",         title: "Brand films",           text: "Story-led films that show who you are and why customers should care." },
+        { icon: "video",        title: "Ads and commercials",   text: "Scripted, shot and cut for YouTube, TV and paid social." },
+        { icon: "phone-mobile", title: "Social and short-form", text: "Reels, Shorts and TikToks sized and paced for the feed." },
+        { icon: "zap",          title: "Event coverage",        text: "Multi-camera filming with a fast highlight edit for sharing." },
+        { icon: "scissors",     title: "Editing and motion",    text: "Colour grading, sound design and motion graphics on your footage." },
+        { icon: "clock",        title: "A clear process",       text: "One point of contact, a fixed quote and revisions built in." }
+      ],
+
+      contact: {
+        phone: "+00 000 000 0000",
+        email: "hello@yourstudio.com",
+        address: ["123 Example Street", "Your City, Your Country"],
+        hours: "Mon to Sat, 10:00 to 18:00",
+        // Text Google Maps will search for. Replace with your real address.
+        mapQuery: "New York, NY, USA"
+      },
+
+      // Icons available: instagram, youtube, facebook, linkedin, twitter (anything else shows a link icon)
+      socials: [
+        { name: "Instagram", url: "https://instagram.com/yourstudio",        icon: "instagram" },
+        { name: "YouTube",   url: "https://youtube.com/@yourstudio",         icon: "youtube" },
+        { name: "Facebook",  url: "https://facebook.com/yourstudio",         icon: "facebook" },
+        { name: "LinkedIn",  url: "https://linkedin.com/company/yourstudio", icon: "linkedin" }
+      ]
+    };
+
+    /* =====================================================================
+       Page logic. You shouldn't need to change anything below this line.
+       ===================================================================== */
+    const $  = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+    const get = (o, path) => path.split(".").reduce((a, k) => a?.[k], o);
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+
+    const ICONS = {
+      chat: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+      film: '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>',
+      scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+      zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+      "phone-mobile": '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+      video: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>',
+      clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+      mail: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+      pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+      instagram: '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',
+      youtube: '<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>',
+      facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+      linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+      twitter: '<path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>',
+      link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
+    };
+    const icon = (name, cls = "h-5 w-5") =>
+      `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.link}</svg>`;
+    const PLAY = '<svg class="ml-0.5 h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
+
+    // Accent colours (R G B) that cards cycle through, and placeholder artwork
+    const ACCENTS = ["34 225 255", "255 46 147", "124 92 255"];
+    const ART = [
+      "radial-gradient(circle at 15% 20%,rgba(255,46,147,.55),transparent 55%),radial-gradient(circle at 85% 85%,rgba(34,225,255,.4),transparent 55%),#0C0C1C",
+      "radial-gradient(circle at 80% 15%,rgba(124,92,255,.6),transparent 55%),radial-gradient(circle at 15% 90%,rgba(34,225,255,.4),transparent 55%),#0C0C1C",
+      "radial-gradient(circle at 20% 80%,rgba(255,46,147,.5),transparent 55%),radial-gradient(circle at 85% 20%,rgba(124,92,255,.5),transparent 55%),#0C0C1C"
+    ];
+
+    // Accepts a YouTube link (watch, youtu.be, embed, shorts) or a bare 11-character ID
+    const ytId = v => {
+      const s = String(v || "").trim();
+      const m = s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/);
+      return m ? m[1] : "";
+    };
+
+    /* ---------- Static text, page title, icons ---------- */
+    document.title = SITE.brand + " | Video Production Agency";
+    $$("[data-t]").forEach(el => { el.textContent = get(SITE, el.dataset.t) ?? ""; });     $$
+("[data-icon]").forEach(el => { el.outerHTML = icon(el.dataset.icon, el.dataset.cls); });
+    $("#year").textContent = new Date().getFullYear();      /* ---------- WhatsApp links ---------- */     const waUrl = "https://wa.me/" + String(SITE.whatsapp.number).replace(/\D/g, "") +                   "?text=" + encodeURIComponent(SITE.whatsapp.message);     $$("[data-whatsapp]").forEach(a => { a.href = waUrl; });
+
+    /* ---------- Hero headline (word-by-word) ---------- */
+    $("#headline").innerHTML = SITE.hero.headline.trim().split(/\s+/)
+      .map((w, i) => `<span class="word" style="--i:${i}">${esc(w)}</span>`).join(" ");
+
+    /* ---------- Video frames (thumbnail + play overlay, loads the player on click) ---------- */
+    function frameInner(url, title, i) {
+      const id = ytId(url);
+      const art = id
+        ? `<img class="thumb absolute inset-0 h-full w-full object-cover" alt="" loading="lazy"
+                src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg"
+                onload="if(this.naturalWidth<300&&!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg'}"
+                onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg'}">`
+        : `<div class="thumb absolute inset-0" style="background:${ART[i % ART.length]}"><div class="art-grid absolute inset-0"></div></div>`;
+      const shade = `<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>`;
+      const btn = `<span class="play-btn${i === -1 ? " lg" : ""}">${PLAY}</span>`;
+      const layer = id
+        ? `<button type="button" data-play="${id}" data-title="${esc(title)}" aria-label="Play video: ${esc(title)}"
+                   class="play-hit absolute inset-0 grid place-items-center">${btn}</button>`
+        : `<div class="absolute inset-0 grid place-items-center">${btn}
+             <span class="absolute bottom-3 left-4 text-xs text-white/70">Video coming soon</span></div>`;
+      return art + shade + layer;
+    }
+
+    // Hero reel (index -1 = large play button)
+    $("#reelFrame").innerHTML = frameInner(SITE.reel.url, SITE.reel.title, -1);
+
+    // Click a play button to swap the thumbnail for the YouTube player
+    document.addEventListener("click", e => {
+      const b = e.target.closest("[data-play]");
+      if (!b) return;
+      const host = b.closest("[data-frame]");
+      host.innerHTML = `<iframe class="absolute inset-0 h-full w-full" title="${esc(b.dataset.title)}"
+        src="https://www.youtube-nocookie.com/embed/${b.dataset.play}?autoplay=1&rel=0"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      host.closest(".vcard")?.setAttribute("data-playing", "");
+    });
+
+    /* ---------- Portfolio grid + filters ---------- */
+    const categories = ["All", ...new Set(SITE.videos.map(v => v.category))];
+    let activeCat = "All";
+
+    function videoCard(v, i, animate, pos) {
+      const wrapAttrs = animate
+        ? `data-aos="fade-up" data-aos-delay="${(pos % 3) * 100}"`
+        : `style="animation-delay:${(pos % 3) * 60}ms"`;
+      return `
+        <div class="card-wrap ${animate ? "" : "filter-in"}" ${wrapAttrs}>
+          <article class="vcard glass overflow-hidden rounded-2xl" style="--accent:${ACCENTS[i % ACCENTS.length]}">
+            <div data-frame class="relative aspect-video overflow-hidden bg-[#0C0C1C]">${frameInner(v.url, v.title, i)}</div>
+            <div class="flex items-center justify-between gap-3 p-4">
+              <h3 class="text-lg font-semibold leading-snug">${esc(v.title)}</h3>
+              <span class="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/75">${esc(v.category)}</span>
+            </div>
+          </article>
+        </div>`;
+    }
+
+    function renderWork(animate) {
+      $("#filters").innerHTML = categories.map(c => {
+        const on = c === activeCat;
+        return `<button type="button" data-cat="${esc(c)}" aria-pressed="${on}"
+                  class="rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300 ${on
+                    ? "border-white bg-white text-[#06060F] shadow-[0_0_24px_rgba(255,255,255,.35)]"
+                    : "glass text-white/80 hover:border-neon-cyan/60 hover:text-white"}">${esc(c)}</button>`;
+      }).join("");
+
+      $("#videoGrid").innerHTML = SITE.videos
+        .map((v, i) => ({ v, i }))
+        .filter(({ v }) => activeCat === "All" || v.category === activeCat)
+        .map(({ v, i }, pos) => videoCard(v, i, animate, pos))
+        .join("");
+    }
+
+    $("#filters").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-cat]");
+      if (!btn) return;
+      activeCat = btn.dataset.cat;
+      renderWork(false);
+      $(`#filters button[data-cat="${CSS.escape(activeCat)}"]`)?.focus();
+    });
+    renderWork(true);
+
+    /* ---------- Services ---------- */
+    $("#serviceGrid").innerHTML = SITE.services.map((s, i) => `
+      <div class="card-wrap" data-aos="fade-up" data-aos-delay="${(i % 3) * 100}">
+        <div class="fcard spot glass h-full rounded-2xl p-6 sm:p-7" style="--accent:${ACCENTS[i % ACCENTS.length]}">
+          <div class="chip">${icon(s.icon, "h-6 w-6")}</div>
+          <h3 class="mt-6 font-display text-base font-semibold leading-snug">${esc(s.title)}</h3>
+          <p class="mt-3 text-white/65">${esc(s.text)}</p>
+        </div>
+      </div>
+    `).join("");
+
+    // Cursor spotlight on service cards
+    document.addEventListener("pointermove", e => {
+      const el = e.target.closest(".spot");
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+
+    /* ---------- Contact & location ---------- */
+    const c = SITE.contact;
+    const mapsOpen = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.mapQuery);
+    const rows = [
+      { icon: "phone", label: "Call us", html: esc(c.phone), href: "tel:" + c.phone.replace(/[^\d+]/g, "") },
+      { icon: "mail",  label: "Email",   html: esc(c.email), href: "mailto:" + c.email },
+      { icon: "pin",   label: "Studio",  html: c.address.map(esc).join("<br>"), href: mapsOpen, external: true },
+      { icon: "clock", label: "Opening hours", html: esc(c.hours) }
+    ];
+    $("#contactRows").innerHTML = rows.map((r, i) => {
+      const inner = `
+        <span class="chip" style="--accent:${ACCENTS[i % ACCENTS.length]}">${icon(r.icon)}</span>
+        <span class="min-w-0">
+          <span class="block text-sm text-white/55">${r.label}</span>
+          <span class="block break-words font-medium">${r.html}</span>
+        </span>`;
+      const cls = "row glass flex items-center gap-4 rounded-2xl p-4";
+      const style = `style="--accent:${ACCENTS[i % ACCENTS.length]}"`;
+      return r.href
+        ? `<a href="${esc(r.href)}" ${r.external ? 'target="_blank" rel="noopener noreferrer"' : ""} class="${cls}" ${style}>${inner}</a>`
+        : `<div class="${cls}" ${style}>${inner}</div>`;
+    }).join("");
+
+    $("#map").src = "https://www.google.com/maps?q=" + encodeURIComponent(c.mapQuery) + "&output=embed";
+
+    $("#socials").innerHTML = SITE.socials.map(s => `
+      <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"
+         class="pill glass inline-flex items-center gap-2.5 rounded-full px-5 py-3 text-sm font-semibold">
+        ${icon(s.icon, "h-4 w-4")}<span>${esc(s.name)}</span>
+      </a>
+    `).join("");
+
+    /* ---------- Viewfinder timecode (24 fps) ---------- */
+    (function () {
+      const el = $("#timecode");
+      if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const pad = n => String(n).padStart(2, "0");
+      const t0 = performance.now();
+      let last = -1;
+      (function tick() {
+        const f = Math.floor((performance.now() - t0) / 1000 * 24);
+        if (f !== last) {
+          last = f;
+          el.textContent = `${pad(Math.floor(f / 86400))}:${pad(Math.floor(f / 1440) % 60)}:${pad(Math.floor(f / 24) % 60)}:${pad(f % 24)}`;
+        }
+        requestAnimationFrame(tick);
+      })();
+    })();
+
+    /* ---------- Animate On Scroll ---------- */
+    if (window.AOS) {
+      AOS.init({
+        duration: 800,
+        easing: "ease-out-cubic",
+        once: true,
+        offset: 60,
+        disable: matchMedia("(prefers-reduced-motion: reduce)").matches
+      });
+      window.addEventListener("load", () => AOS.refresh());
+    } else {
+      // If the AOS script fails to load, show everything instead of leaving it hidden
+      $$("[data-aos]").forEach(el => el.removeAttribute("data-aos"));
+    }
+  </script>
+</body>
+</html>
